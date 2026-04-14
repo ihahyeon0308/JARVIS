@@ -1,53 +1,246 @@
-# 👏 Wake Up
+# 👏 Clap Launcher - JARVIS
 
-**Cross-platform** voice and clap-controlled app launcher! Say a wake word, then use clap patterns to launch apps.
+**박수로 제어하는 앱 실행 프로그램!** 마이크로 박수를 감지하고 박수 패턴으로 앱을 자동으로 실행합니다.
 
-✅ **Automatically detects your OS** (macOS, Windows, Linux) and adjusts commands accordingly!
+✅ **Windows 최적화** - `run.bat` 한 번의 클릭으로 시작
 
-## 🎬 How It Works
+## 🎬 작동 원리
 
-1. **Say wake word** (e.g., "jarvis") → Activates system
-2. **Double clap** 👏👏 → Launches your configured apps
-3. **Triple clap** 👏👏👏 (within 30 seconds) → Opens a video/URL
+1. **프로그램 실행** → `run.bat` 더블클릭
+2. **박수 2번** 👏👏 → Notion TAB + GitHub 프로필이 **나란히 분할** 배치됨
+3. **박수 3번** 👏👏👏 → VS Code + 영상 재생 후 **자동 종료**
 
-## ✨ Features
+## ✨ 기능
 
-- 🖥️ **Cross-platform**: Works on macOS, Windows, and Linux
-- 🔌 **100% Offline**: Wake word detection runs locally
-- 🎯 **Smart OS Detection**: Automatically uses the right commands for your system
-- 🎤 **Fast & Accurate**: Porcupine wake word engine
-- 🎵 **Customizable**: Configure any apps and actions
+- 🎙️ **박수 감지**: 마이크를 통한 정확한 박수 인식
+- 🪟 **Smart Window Arrangement**: Chrome 창을 자동으로 왼쪽/오른쪽으로 배치
+- 🔗 **커스텀 링크**: Notion, GitHub 등 자신의 링크로 설정 가능
+- 🎬 **영상 자동 재생**: Video 폴더의 MP4 파일 자동 인식 및 재생
+- ⚡ **빠른 실행**: 한 번의 클릭으로 모든 기능 시작
+- 🔌 **간단한 설정**: Python만 설치하면 바로 사용 가능
 
-## 📋 Requirements
+## 📋 요구사항
 
-- **Python 3.9-3.12** (avoid 3.13 on Windows - dependency issues)
-- Microphone
-- macOS, Windows, or Linux
-- Free Porcupine API key from [console.picovoice.ai](https://console.picovoice.ai/)
+- **Python 3.13** (Windows)
+- **마이크** (정확한 박수 감지 필수)
+- **Google Chrome** (필수)
+- **Windows OS**
+- PyAudio, NumPy, pvporcupine
 
-## 🚀 Quick Start
+## 🚀 빠른 시작
 
-### 1. Get API Key
+### 1️⃣ 설치
 
-Sign up at [console.picovoice.ai](https://console.picovoice.ai/) and copy your Access Key (free tier available).
-
-### 2. Install
-
-**macOS:**
 ```bash
-# Install portaudio first (required for PyAudio)
-brew install portaudio
+# 1. 저장소 클론 또는 다운로드
+git clone https://github.com/ihahyeon0308/JARVIS.git
+cd JARVIS
 
-git clone https://github.com/tpateeq/wake-up.git
-cd wake-up
-python3 -m venv venv
-source venv/bin/activate
+# 2. Python 3.13 설치 확인
+python --version
+
+# 3. 패키지 설치
 pip install -r requirements.txt
 ```
 
-**Windows:**
+### 2️⃣ 실행
+
+**방법 1: 가장 간단 (추천)**
 ```bash
-git clone https://github.com/tpateeq/wake-up.git
+run.bat 더블클릭
+```
+
+**방법 2: 커맨드라인**
+```bash
+"C:\Program Files\Python313\python.exe" clap_launcher.py
+```
+
+**방법 3: 바탕화면 바로가기**
+```bash
+# create_shortcut.vbs 더블클릭
+# 그 후 바탕화면의 "Clap Launcher" 아이콘 더블클릭
+```
+
+## ⚙️ 커스터마이징
+
+### 링크 변경
+
+[clap_launcher.py](clap_launcher.py) 파일에서 `launch_all_apps()` 함수 수정:
+
+```python
+def launch_all_apps(self):
+    print("\n🚀 박수 두 번 감지! 링크 열기 중...\n")
+    if self.os_type == "Windows":
+        subprocess.Popen(["start", "chrome.exe", "--new-window", "https://your-github-link.com"], shell=True)
+        print("✅ GitHub 프로필 열기")
+        time.sleep(1.5)
+        
+        subprocess.Popen(["start", "chrome.exe", "--new-window", "https://your-notion-page.com"], shell=True)
+        print("✅ Notion TAB 열기")
+```
+
+### 영상 변경
+
+1. `Video/` 폴더에 새로운 MP4 파일 추가
+2. 기존 파일 삭제
+3. 자동으로 인식하여 재생됩니다 (파일명 상관 없음)
+
+```bash
+# 현재 영상 파일
+Video/KakaoTalk_20260414_143119943.mp4
+```
+
+### 박수 감도 조정
+
+[clap_launcher.py](clap_launcher.py) 약 183번째 줄:
+
+```python
+launcher = ClapLauncher(clap_threshold=1800, debug=False)
+# clap_threshold 값을 조정
+# 낮을수록 민감 (더 쉽게 감지)
+# 높을수록 무뎌짐 (강한 박수만 감지)
+```
+
+## 📁 파일 구조
+
+```
+JARVIS/
+├── clap_launcher.py          # 메인 프로그램  ⭐
+├── run.bat                   # Windows 실행 파일 (더블클릭!)
+├── arrange_windows.ps1       # Chrome 창 배치 스크립트
+├── create_shortcut.vbs       # 바탕화면 바로가기 생성 (선택)
+├── requirements.txt          # Python 패키지 목록
+├── Video/                    # 영상 폴더
+│   └── *.mp4                 # 여기에 MP4 파일 추가
+├── Dockerfile                # Docker 설정
+└── README.md                 # 이 파일
+```
+
+## 🎯 박수 패턴
+
+| 패턴 | 동작 | 상태 |
+|------|------|------|
+| **👏👏** | Notion + GitHub을 **나란히** 열기 | 대기 모드 전환 |
+| **👏👏👏** | VS Code + 영상 재생 후 종료 | 프로그램 자동 종료 |
+
+## 🔧 문제 해결
+
+### 1️⃣ "ModuleNotFoundError: No module named 'pyaudio'"
+
+```bash
+# Python 3.13 사용자는 미리 컴파일된 버전 설치
+pip install --upgrade pyaudio
+
+# 또는
+pip install pipwin
+pipwin install pyaudio
+```
+
+### 2️⃣ Chrome이 열리지 않음
+
+Chrome이 설치되어 있고 PATH에 등록되었는지 확인:
+
+```bash
+where chrome
+```
+
+설치되지 않았다면:
+- [Google Chrome 다운로드](https://google.com/chrome)에서 설치
+
+### 3️⃣ 박수가 감지되지 않음
+
+**체크리스트:**
+1. 마이크가 제대로 연결되었는지 확인
+2. Windows 설정 → 개인 정보 보호 → 마이크에서 Python 접근 허용 확인
+3. `clap_threshold` 값을 낮춰보기 (더 민감하게)
+
+```bash
+# Debug 모드에서 박수 강도 확인
+python clap_launcher.py --debug
+
+# 박수 칠 때 진폭(Amplitude) 값이 표시됨
+# 값이 충분하지 않으면 clap_threshold 값 낮추기
+```
+
+### 4️⃣ "Python 3.13 not found"
+
+Python 3.13이 설치되어 있는지 확인:
+
+```bash
+python --version
+```
+
+설치되지 않았다면:
+- [Python 3.13 다운로드](https://python.org/downloads/) (반드시 3.13!)
+- 설치 시 "Add Python to PATH" 체크 필수
+
+### 5️⃣ PowerShell 오류
+
+Windows 10/11에서 PowerShell 권한 문제가 발생하면:
+
+```powershell
+# PowerShell을 관리자로 실행 후
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+## 💡 팁
+
+- **박수 감도 미세 조정**: 프로그램을 여러 번 테스트하며 `clap_threshold` 값 추가 조정
+- **조용한 환경에서 테스트**: 배경음이 적을수록 정확도 높음
+- **Chrome 창 배치**: 자동으로 Notion (오른쪽) + GitHub (왼쪽)로 배치됨
+- **영상 변경**: Video 폴더에 새 MP4만 추가하면 자동 인식
+- **바탕화면 바로가기**: `create_shortcut.vbs` 더블클릭하면 자동 생성
+
+## 📊 시스템 요구사항
+
+| 항목 | 사양 |
+|------|------|
+| OS | Windows 10 / 11 |
+| Python | 3.13 |
+| RAM | 최소 2GB |
+| Microphone | 내장/외장 마이크 |
+| Chrome | 최신 버전 |
+
+## 🎵 코드 구조
+
+### Main Functions
+
+```python
+class ClapLauncher:
+    def detect_clap(self):        # 박수 감지
+    def launch_all_apps(self):    # 박수 2번 - 앱 실행
+    def play_video(self):          # 박수 3번 - 영상 재생
+    def arrange_windows(self):     # 창 자동 배치
+```
+
+## ✅ 체크리스트
+
+시작하기 전에 확인하세요:
+
+- [ ] Python 3.13 설치됨
+- [ ] Google Chrome 설치됨  
+- [ ] 마이크 연결됨
+- [ ] `pip install -r requirements.txt` 실행 완료
+- [ ] `run.bat` 파일 확인
+
+## 📝 라이선스
+
+MIT License - 자유롭게 수정하고 배포할 수 있습니다.
+
+## 👤 개발자
+
+**Hahyun Lee** (@ihahyeon0308)
+- AI Developer | Backend & Frontend
+- Hankuk University of Foreign Studies (HUFS)
+- Computer Science and Engineering
+
+## 🤝 기여하기
+
+개선 사항이나 버그 리포트는 언제든 환영합니다!
+
+---
+
+**박수로 더 빠르게 일해보세요!** 👏🚀
 cd wake-up
 python -m venv venv
 venv\Scripts\activate
